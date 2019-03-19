@@ -1,0 +1,28 @@
+From 55ad5e3507c8371c96da6cd2cb9a690a0048fcb9 Mon Sep 17 00:00:00 2001
+From: Ross Lagerwall <ross.lagerwall@citrix.com>
+Date: Mon, 24 Apr 2017 13:57:57 +0100
+Subject: [PATCH] Remove section alignment requirement
+
+Remove the requirement that section twins have the same alignment. The
+section alignment of the patched section is respected by the loader in
+Xen so it shouldn't matter if the original section alignment was
+different.
+---
+ create-diff-object.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/create-diff-object.c b/create-diff-object.c
+index 2b791ab..9ebf438 100644
+--- a/create-diff-object.c
++++ b/create-diff-object.c
+@@ -754,7 +754,6 @@ static void kpatch_compare_correlated_section(struct section *sec)
+ 	if (sec1->sh.sh_type != sec2->sh.sh_type ||
+ 	    sec1->sh.sh_flags != sec2->sh.sh_flags ||
+ 	    sec1->sh.sh_addr != sec2->sh.sh_addr ||
+-	    sec1->sh.sh_addralign != sec2->sh.sh_addralign ||
+ 	    sec1->sh.sh_entsize != sec2->sh.sh_entsize)
+ 		DIFF_FATAL("%s section header details differ", sec1->name);
+ 
+-- 
+2.7.4
+

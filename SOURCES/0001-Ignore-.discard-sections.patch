@@ -1,0 +1,33 @@
+From 64da8dd0a2b3fcc928b3a33d7447242515ac0f55 Mon Sep 17 00:00:00 2001
+From: Ross Lagerwall <ross.lagerwall@citrix.com>
+Date: Mon, 24 Apr 2017 12:52:43 +0100
+Subject: [PATCH 1/2] Ignore .discard sections
+
+Ignore differences in discard sections. They are not included in the final xen
+binary so there is no need to include them in the live patch.
+---
+ create-diff-object.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/create-diff-object.c b/create-diff-object.c
+index 217e58f..ba19daf 100644
+--- a/create-diff-object.c
++++ b/create-diff-object.c
+@@ -888,6 +888,14 @@ static void kpatch_mark_ignored_sections(struct kpatch_elf *kelf)
+ 	struct rela *rela;
+ 	char *name;
+ 
++	/* Always ignore .discard sections */
++	sec = find_section_by_name(&kelf->sections, ".discard");
++	if (sec) {
++		sec->ignore = 1;
++		if (sec->twin)
++			sec->twin->ignore = 1;
++	}
++
+ 	sec = find_section_by_name(&kelf->sections, ".livepatch.ignore.sections");
+ 	if (!sec)
+ 		return;
+-- 
+2.7.4
+
