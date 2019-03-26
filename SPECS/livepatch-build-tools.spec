@@ -1,7 +1,7 @@
 Name: livepatch-build-tools
 Summary: Xen LivePatch patch builder
 Version: 0.1
-Release: 1
+Release: 1%{dist}
 
 Group: Development/Tools
 License: GPLv2
