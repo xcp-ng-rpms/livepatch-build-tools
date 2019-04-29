@@ -1,0 +1,52 @@
+From 67c8f2b0461fefeda37f18f759e9fb162bf646b5 Mon Sep 17 00:00:00 2001
+From: Ross Lagerwall <ross.lagerwall@citrix.com>
+Date: Wed, 4 Oct 2017 13:59:40 +0100
+Subject: [PATCH] Allow patching files compiled multiple times
+
+gas prior to binutils commit fbdf9406b0 (appears in 2.27) outputs symbol
+table entries resulting from .file in reverse order. If we get two
+consecutive file symbols, prefer the first one if that names an object
+file or has a directory component (to cover multiply compiled files).
+
+This is the same workaround that was applied in Xen commit d37d63d4b548
+("symbols: prefix static symbols with their source file names") for
+Xen's internal symbol table.
+diff --git a/lookup.c b/lookup.c
+index 39125c6..645b91a 100644
+--- a/lookup.c
++++ b/lookup.c
+@@ -149,16 +149,34 @@ int lookup_local_symbol(struct lookup_table *table, char *name, char *hint,
+ 	struct symbol *sym, *match = NULL;
+ 	int i;
+ 	char *curfile = NULL;
++	enum { other, multi_source } last_type = other;
+ 
+ 	memset(result, 0, sizeof(*result));
+ 	for_each_symbol(i, sym, table) {
+ 		if (sym->type == STT_FILE) {
++			const char *ext = strrchr(sym->name, '.');
++			int multi = strchr(sym->name, '/') ||
++				    (ext && ext[1] == 'o');
++
++			/*
++			 * gas prior to binutils commit fbdf9406b0 (appears in
++			 * 2.27) outputs symbol table entries resulting from
++			 * .file in reverse order. If we get two consecutive
++			 * file symbols, prefer the first one if that names an
++			 * object file or has a directory component (to cover
++			 * multiply compiled files).
++			 */
++			if (last_type == multi_source)
++				continue;
++
+ 			if (!strcmp(sym->name, hint)) {
+ 				curfile = sym->name;
++				last_type = multi ? multi_source : other;
+ 				continue; /* begin hint file symbols */
+ 			} else if (curfile)
+ 				curfile = NULL; /* end hint file symbols */
+ 		}
++		last_type = other;
+ 		if (!curfile)
+ 			continue;
+ 		if (sym->bind == STB_LOCAL && !strcmp(sym->name, name)) {

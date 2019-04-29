@@ -1,0 +1,29 @@
+From 8ab940b10a8be3585e27dec66ff8f27cc2f0bbfb Mon Sep 17 00:00:00 2001
+From: Sergey Dyasli <sergey.dyasli@citrix.com>
+Date: Wed, 31 Oct 2018 11:35:59 +0000
+Subject: [PATCH] Xen 4.11: fix altinstructions_group_size
+
+readelf -wi xen/xen-syms | grep alt_instr -A5
+    <e576f0>   DW_AT_byte_size   : 14
+
+Signed-off-by: Sergey Dyasli <sergey.dyasli@citrix.com>
+---
+ create-diff-object.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/create-diff-object.c b/create-diff-object.c
+index 82f777e..d11e716 100644
+--- a/create-diff-object.c
++++ b/create-diff-object.c
+@@ -963,7 +963,7 @@ static int bug_frames_1_group_size(struct kpatch_elf *kelf, int offset) { return
+ static int bug_frames_2_group_size(struct kpatch_elf *kelf, int offset) { return 8; }
+ static int bug_frames_3_group_size(struct kpatch_elf *kelf, int offset) { return 16; }
+ static int ex_table_group_size(struct kpatch_elf *kelf, int offset) { return 8; }
+-static int altinstructions_group_size(struct kpatch_elf *kelf, int offset) { return 12; }
++static int altinstructions_group_size(struct kpatch_elf *kelf, int offset) { return 14; }
+ 
+ /*
+  * The rela groups in the .fixup section vary in size.  The beginning of each
+-- 
+2.17.1
+
