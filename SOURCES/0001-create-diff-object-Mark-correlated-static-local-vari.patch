@@ -1,0 +1,32 @@
+From 09ef2457cd928f414aad8edcb8f1f206206abdb1 Mon Sep 17 00:00:00 2001
+From: Ross Lagerwall <ross.lagerwall@citrix.com>
+Date: Tue, 28 Feb 2017 15:32:46 +0000
+Subject: [PATCH] create-diff-object: Mark correlated static local variables
+ the SAME initially
+
+Normal correlated symbols are marked the SAME initially but static local
+variables are correlated in a separate function. Also mark these the
+SAME.
+
+This fixes an issue where patching a function which called printk_once
+(which uses a static local variable) would fail to build because the
+static local variable was considered new and thus introduced a new data
+member into .data..read_mostly which is not allowed to change.
+
+(Backport 09ef2457cd928f414aad8edcb8f1f206206abdb1 from kpatch.)
+
+Signed-off-by: Ross Lagerwall <ross.lagerwall@citrix.com>
+diff --git a/create-diff-object.c b/create-diff-object.c
+index 82f777e..f03230a 100644
+--- a/create-diff-object.c
++++ b/create-diff-object.c
+@@ -636,6 +636,9 @@ void kpatch_correlate_static_local_variables(struct kpatch_elf *base,
+ 		sym->twin = patched_sym;
+ 		patched_sym->twin = sym;
+ 
++		/* set initial status, might change */
++		sym->status = patched_sym->status = SAME;
++
+ 		if (bundled) {
+ 			sym->sec->twin = patched_sym->sec;
+ 			patched_sym->sec->twin = sym->sec;
