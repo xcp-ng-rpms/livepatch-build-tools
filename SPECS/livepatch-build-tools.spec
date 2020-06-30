@@ -1,19 +1,18 @@
 Name: livepatch-build-tools
 Summary: Xen LivePatch patch builder
 Version: 0.1
-Release: 2.0.2
+Release: 3.0.0
 
 Group: Development/Tools
 License: GPLv2
 URL: http://xenbits.xen.org/gitweb/?p=livepatch-build-tools.git
 
-Source0: https://code.citrite.net/rest/archive/latest/projects/XSU/repos/livepatch-build-tools/archive?at=0c104573a1c168995ec553778d1d2d1ebe9c9042&format=tar.gz&prefix=livepatch-build-tools-0.1#/livepatch-build-tools-0.1.tar.gz
+Source0: https://code.citrite.net/rest/archive/latest/projects/XSU/repos/livepatch-build-tools/archive?at=a1277bfa9c6e82ba03edd6c931672505afe75477&format=tar.gz&prefix=livepatch-build-tools-0.1#/livepatch-build-tools-0.1.tar.gz
 
 Patch0: 0001-Allow-patching-files-compiled-multiple-times.patch
-Patch1: 0001-Xen-4.11-fix-altinstructions_group_size.patch
-Patch2: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
+Patch1: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
 
-Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/livepatch-build-tools.pg/archive?at=2.0.1&format=tar#/livepatch-build-tools.pg.tar) = c47467065fc6d033e1b559e975f5418aac8e2438
+Provides: gitsha(https://code.citrite.net/rest/archive/latest/projects/XS/repos/livepatch-build-tools.pg/archive?at=3.0.0&format=tar#/livepatch-build-tools.pg.tar) = dd420b9013f901cbea99b3db30bed3d4651ba646
 
 
 Requires: binutils
@@ -42,6 +41,9 @@ make install PREFIX=/usr DESTDIR=%{buildroot}
 
 
 %changelog
+* Thu Dec 05 2019 Sergey Dyasli <sergey.dyasli@citrix.com> - 0.1-3.0.0
+- Resync with upstream
+
 * Wed May 15 2019 Sergey Dyasli <sergey.dyasli@citrix.com> - 0.1-2.0.2
 - Fix description string
 
