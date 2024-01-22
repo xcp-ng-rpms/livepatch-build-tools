@@ -1,20 +1,21 @@
-%global package_speccommit 03df930513dbe586efeeb0bc418820ce5eacc061
-%global usver 0.1
-%global xsver 3.0.2
+%global package_speccommit dd1c0d7171a1fb373d48b85608e152c4a061a675
+%global usver 20231113
+%global xsver 1
 %global xsrel %{xsver}%{?xscount}%{?xshash}
-%global package_srccommit a1277bfa9c6e82ba03edd6c931672505afe75477
+%global package_srccommit e588b7914e7afa3abb64b15a32fc2fdb57ded341
 
 Name: livepatch-build-tools
 Summary: Xen LivePatch patch builder
-Version: 0.1
+Version: 20231113
 Release: %{?xsrel}%{?dist}
 
 Group: Development/Tools
 License: GPLv2
 URL: http://xenbits.xen.org/gitweb/?p=livepatch-build-tools.git
-Source0: livepatch-build-tools-0.1.tar.gz
+Source0: livepatch-build-tools-20231113.tar.gz
 Patch0: 0001-Allow-patching-files-compiled-multiple-times.patch
 Patch1: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
+Patch2: revert-2142f99087e8.patch
 
 Requires: binutils
 BuildRequires: gcc elfutils elfutils-devel
@@ -47,6 +48,13 @@ make install PREFIX=/usr DESTDIR=%{buildroot}
 
 
 %changelog
+* Mon Nov 27 2023 Andrew Cooper <andrew.cooper3@citrix.com> - 20231113-1
+- Fix building live patches with dev-toolset-11
+
+* Mon Nov 27 2023 Andrew Cooper <andrew.cooper3@citrix.com> - 20191203-1
+- Change versioning scheme to avoid an arbitrary 0.1.  Use the date of the
+  upstream livepatch-build-tools commit.
+
 * Tue Nov 02 2021 Igor Druzhinin <igor.druzhinin@citrix.com> - 0.1-3.0.2
 - CP-38201: Enable static analysis with Coverity
 

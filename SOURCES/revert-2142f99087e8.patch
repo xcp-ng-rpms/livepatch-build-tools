@@ -1,0 +1,43 @@
+diff --git a/common.h b/common.h
+index 0d3e5f1dd3b5..f5297600941a 100644
+--- a/common.h
++++ b/common.h
+@@ -119,14 +119,6 @@ struct kpatch_elf {
+ };
+ 
+ #define PATCH_INSN_SIZE 5
+-#define MAX_REPLACEMENT_SIZE 31
+-struct livepatch_expectation {
+-	uint8_t enabled : 1;
+-	uint8_t len : 5;
+-	uint8_t pad : 2;
+-	uint8_t data[MAX_REPLACEMENT_SIZE];
+-};
+-typedef struct livepatch_expectation livepatch_expectation_t;
+ 
+ struct livepatch_patch_func {
+ 	char *name;
+@@ -135,10 +127,9 @@ struct livepatch_patch_func {
+ 	uint32_t new_size;
+ 	uint32_t old_size;
+ 	uint8_t version;
+-	unsigned char pad[MAX_REPLACEMENT_SIZE];
++	unsigned char pad[31];
+ 	uint8_t applied;
+ 	uint8_t _pad[7];
+-	livepatch_expectation_t expect;
+ };
+ 
+ struct special_section {
+diff --git a/create-diff-object.c b/create-diff-object.c
+index d0e14e3a62bb..5776a2cb0511 100644
+--- a/create-diff-object.c
++++ b/create-diff-object.c
+@@ -2035,7 +2035,6 @@ static void livepatch_create_patches_sections(struct kpatch_elf *kelf,
+ 			memset(funcs[index].pad, 0, sizeof funcs[index].pad);
+ 			funcs[index].applied = 0;
+ 			memset(funcs[index]._pad, 0, sizeof funcs[index]._pad);
+-			memset(&funcs[index].expect, 0, sizeof funcs[index].expect);
+ 
+ 			/*
+ 			 * Add a relocation that will populate
