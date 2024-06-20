@@ -1,6 +1,6 @@
-%global package_speccommit 526a4253e1244533d1b797dfb69e3a04978aba30
+%global package_speccommit 9605a2467e8275e5ef9135f77ed83730ed463ad0
 %global usver 20240223
-%global xsver 1
+%global xsver 2
 %global xsrel %{xsver}%{?xscount}%{?xshash}
 %global package_srccommit ae65ea21e27f861ac10cebc006b9b4bbb3b3dbbc
 
@@ -16,6 +16,7 @@ Source0: livepatch-build-tools-20240223.tar.gz
 Patch0: 0001-Allow-patching-files-compiled-multiple-times.patch
 Patch1: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
 Patch2: 0001-livepatch-build-tools-allow-patch-name-sizes-up-to-1.patch
+Patch3: 001-Use-new-original-xen-syms
 
 Requires: binutils
 BuildRequires: gcc elfutils elfutils-devel
@@ -48,6 +49,10 @@ make install PREFIX=/usr DESTDIR=%{buildroot}
 
 
 %changelog
+* Mon Apr 08 2024 Alejandro Vallejo <alejandro.vallejo@cloud.com> - 20240223-2
+- Make the tooling use a locally compiled "xen-syms" rather than the originally
+  archived one
+
 * Fri Feb 23 2024 Andrew Cooper <andrew.cooper3@citrix.com> - 20240223-1
 - Fix inclusion of new object files.
 
