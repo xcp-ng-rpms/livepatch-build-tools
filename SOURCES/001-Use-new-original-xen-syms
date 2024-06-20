@@ -1,0 +1,13 @@
+diff --git a/livepatch-build b/livepatch-build
+index 0e4e3f7d3dfb..5f7ba82a5ccd 100755
+--- a/livepatch-build
++++ b/livepatch-build
+@@ -210,7 +210,7 @@ function create_patch()
+         mkdir -p "output/$(dirname $i)" || die
+         echo "Processing ${i}"
+         echo "Run create-diff-object on $i" >> "${OUTPUT}/create-diff-object.log"
+-        "${TOOLSDIR}"/create-diff-object $debugopt $PRELINK "original/$i" "patched/$i" "$XENSYMS" "output/$i" &>> "${OUTPUT}/create-diff-object.log"
++        "${TOOLSDIR}"/create-diff-object $debugopt $PRELINK "original/$i" "patched/$i" "${OUTPUT}/xen-syms" "output/$i" &>> "${OUTPUT}/create-diff-object.log"
+         rc="${PIPESTATUS[0]}"
+         if [[ $rc = 139 ]]; then
+             warn "create-diff-object SIGSEGV"
