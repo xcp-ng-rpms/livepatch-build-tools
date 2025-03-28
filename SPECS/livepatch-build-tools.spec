@@ -1,22 +1,21 @@
-%global package_speccommit 9605a2467e8275e5ef9135f77ed83730ed463ad0
-%global usver 20240223
-%global xsver 2
+%global package_speccommit 30e9b4e76f5ac8e556e66f7408d837fe9bebbd86
+%global usver 20250121
+%global xsver 1
 %global xsrel %{xsver}%{?xscount}%{?xshash}
-%global package_srccommit ae65ea21e27f861ac10cebc006b9b4bbb3b3dbbc
+%global package_srccommit 56a3a75adb4f1e11273ef5f2f13a82a2f3e93a07
 
 Name: livepatch-build-tools
 Summary: Xen LivePatch patch builder
-Version: 20240223
+Version: 20250121
 Release: %{?xsrel}%{?dist}
 
 Group: Development/Tools
 License: GPLv2
 URL: http://xenbits.xen.org/gitweb/?p=livepatch-build-tools.git
-Source0: livepatch-build-tools-20240223.tar.gz
+Source0: livepatch-build-tools-20250121.tar.gz
 Patch0: 0001-Allow-patching-files-compiled-multiple-times.patch
 Patch1: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
-Patch2: 0001-livepatch-build-tools-allow-patch-name-sizes-up-to-1.patch
-Patch3: 001-Use-new-original-xen-syms
+Patch2: 001-Use-new-original-xen-syms
 
 Requires: binutils
 BuildRequires: gcc elfutils elfutils-devel
@@ -49,6 +48,10 @@ make install PREFIX=/usr DESTDIR=%{buildroot}
 
 
 %changelog
+* Tue Jan 21 2025 Roger Pau Monné <roger.pau@citrix.com> - 20250121-1
+- Fix handling of .cold symbols and related secions.
+- Fix possible segmentation fault when using hook sections.
+
 * Mon Apr 08 2024 Alejandro Vallejo <alejandro.vallejo@cloud.com> - 20240223-2
 - Make the tooling use a locally compiled "xen-syms" rather than the originally
   archived one
