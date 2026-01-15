@@ -1,0 +1,56 @@
+From f7f44fe8d4cd1fb20d7502db9e09851ea8d47519 Mon Sep 17 00:00:00 2001
+From: Roger Pau Monne <roger.pau@citrix.com>
+Date: Mon, 8 Sep 2025 10:57:54 +0200
+Subject: [PATCH] common: allow function symbols with offsets inside sections
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Due to the addition of the XSA-469 fix in Xen, now the indirect thunks can
+be prefixed with `int3` to have a certain alignment.  Such padding is
+placed ahead of the function symbol, and has no symbol associated.
+
+0000000000000000 <__x86_indirect_thunk_r15-0x20>:
+   0:   cc                      int3
+[...]
+  1f:   cc                      int3
+
+0000000000000020 <__x86_indirect_thunk_r15>:
+  20:   90                      nop
+  21:   e8 01 00 00 00          callq  27 <__x86_indirect_thunk_r15+0x7>
+
+See xen.git commit:
+
+afcb4a06c740 x86/thunk: Build Xen with Return Thunks
+
+Accommodate for livepatch-build-tools to support this use-case, by removing
+the error case and instead printing a debug message to notice the symbol
+offset. Additionally add an extra check to ensure there's only one function
+symbol per-section.
+
+Reported-by: Andrew Cooper <andrew.cooper3@citrix.com>
+Signed-off-by: Roger Pau Monné <roger.pau@citrix.com>
+---
+ common.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/common.c b/common.c
+index 67b9fcdb0ada..790e8acf629f 100644
+--- a/common.c
++++ b/common.c
+@@ -214,8 +214,11 @@ static void kpatch_create_symbol_list(struct kpatch_elf *kelf)
+ 
+ 			if (is_bundleable(sym)) {
+ 				if (sym->sym.st_value != 0)
+-					ERROR("symbol %s at offset %lu within section %s, expected 0",
++					log_debug("symbol %s at offset %lu within section %s\n",
+ 					      sym->name, sym->sym.st_value, sym->sec->name);
++				if (sym->sec->sym)
++					ERROR("multiple function symbols %s and %s within section %s",
++					      sym->name, sym->sec->sym->name, sym->sec->name);
+ 				sym->sec->sym = sym;
+ 			} else if (sym->type == STT_SECTION) {
+ 				sym->sec->secsym = sym;
+-- 
+2.51.0
+

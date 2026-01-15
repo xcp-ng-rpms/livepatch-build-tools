@@ -1,23 +1,32 @@
-%global package_speccommit 30e9b4e76f5ac8e556e66f7408d837fe9bebbd86
-%global usver 20250121
-%global xsver 1
+%global package_speccommit 862b6008ca947f324ea43c1af4b789be3650bfe1
+%global usver 20250729
+%global xsver 2
 %global xsrel %{xsver}%{?xscount}%{?xshash}
-%global package_srccommit 56a3a75adb4f1e11273ef5f2f13a82a2f3e93a07
+%global package_srccommit 07043f274059e1575008ba9db1db02bffa4fc169
 
 Name: livepatch-build-tools
 Summary: Xen LivePatch patch builder
-Version: 20250121
+Version: 20250729
 Release: %{?xsrel}%{?dist}
 
 Group: Development/Tools
 License: GPLv2
 URL: http://xenbits.xen.org/gitweb/?p=livepatch-build-tools.git
-Source0: livepatch-build-tools-20250121.tar.gz
+Source0: livepatch-build-tools-20250729.tar.gz
 Patch0: 0001-Allow-patching-files-compiled-multiple-times.patch
 Patch1: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
 Patch2: 001-Use-new-original-xen-syms
+Patch3: CP-50319-implement-livepatch-signing.patch
+Patch4: 0001-common-allow-function-symbols-with-offsets-inside-se.patch
+
+%if "%{dist}" == ".xs8~2_1"
+# Xen 4.13 compat
+Patch1000: revert-2142f99087e8.patch
+Patch1001: revert-615a7786d1d2.patch
+%endif
 
 Requires: binutils
+Requires: perl-interpreter
 BuildRequires: gcc elfutils elfutils-devel
 %{?_cov_buildrequires}
 
@@ -42,15 +51,35 @@ make install PREFIX=/usr DESTDIR=%{buildroot}
 
 %files
 %{_bindir}/livepatch-build
+%{_bindir}/livepatch-sign
 %{_libexecdir}/livepatch-build-tools
 
 %{?_cov_results_package}
 
 
 %changelog
+* Mon Sep 08 2025 Roger Pau Monné <roger.pau@citrix.com> - 20250729-2
+- Support functions that have offsets from the section start
+
+* Tue Jul 29 2025 Frediano Ziglio <frediano.ziglio@cloud.com> - 20250729-1
+- Allows dynamic sizes for build IDs.
+
+* Thu Apr 17 2025 Gerald Elder-Vass <geraldl.elder-vass@cloud.com> - 20250121-4
+- CP-51534: Update signing to work with HSM
+
+* Mon Apr 14 2025 Ross Lagerwall <ross.lagerwall@citrix.com> - 20250121-3
+- CP-50319: Implement livepatch signing
+
+* Thu Mar 06 2025 Ross Lagerwall <ross.lagerwall@citrix.com> - 20250121-2
+- Add perl as a runtime dependency
+
 * Tue Jan 21 2025 Roger Pau Monné <roger.pau@citrix.com> - 20250121-1
 - Fix handling of .cold symbols and related secions.
 - Fix possible segmentation fault when using hook sections.
+
+* Wed Apr 10 2024 Alejandro Vallejo <alejandro.vallejo@cloud.com> - 20240223-3
+- Branched off livepatch-build-tools-20240223-2.xs8
+- Revert ABI breakages on Xen 4.13
 
 * Mon Apr 08 2024 Alejandro Vallejo <alejandro.vallejo@cloud.com> - 20240223-2
 - Make the tooling use a locally compiled "xen-syms" rather than the originally
