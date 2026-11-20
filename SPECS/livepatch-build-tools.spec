@@ -1,23 +1,24 @@
-%global package_speccommit 862b6008ca947f324ea43c1af4b789be3650bfe1
-%global usver 20250729
+%global package_speccommit 36628f6df679a01f8caa28680a8c22cdeafd87e8
+%global usver 20260519
 %global xsver 2
 %global xsrel %{xsver}%{?xscount}%{?xshash}
-%global package_srccommit 07043f274059e1575008ba9db1db02bffa4fc169
+%global package_srccommit 655ee935d069859b161fbc3130603368fcd4326e
 
 Name: livepatch-build-tools
 Summary: Xen LivePatch patch builder
-Version: 20250729
+Version: 20260519
 Release: %{?xsrel}%{?dist}
 
 Group: Development/Tools
 License: GPLv2
 URL: http://xenbits.xen.org/gitweb/?p=livepatch-build-tools.git
-Source0: livepatch-build-tools-20250729.tar.gz
+Source0: livepatch-build-tools-20260519.tar.gz
 Patch0: 0001-Allow-patching-files-compiled-multiple-times.patch
 Patch1: 0001-create-diff-object-Mark-correlated-static-local-vari.patch
 Patch2: 001-Use-new-original-xen-syms
 Patch3: CP-50319-implement-livepatch-signing.patch
 Patch4: 0001-common-allow-function-symbols-with-offsets-inside-se.patch
+Patch5: alt_call_sites.patch
 
 %if "%{dist}" == ".xs8~2_1"
 # Xen 4.13 compat
@@ -58,6 +59,15 @@ make install PREFIX=/usr DESTDIR=%{buildroot}
 
 
 %changelog
+* Wed Jul 22 2026 Andrew Cooper <andrew.cooper3@citrix.com> - 20260519-2
+- Fix generation of livepatches with a change in .alt_call_sites
+
+* Tue May 19 2026 Roger Pau Monné <roger.pau@citrix.com> - 20260519-1
+- Fix fetching special struct sizes.
+
+* Thu Feb 12 2026 Frediano Ziglio <frediano.ziglio@citrix.com> - 20260211-1
+- Treat constant sections as string sections
+
 * Mon Sep 08 2025 Roger Pau Monné <roger.pau@citrix.com> - 20250729-2
 - Support functions that have offsets from the section start
 
