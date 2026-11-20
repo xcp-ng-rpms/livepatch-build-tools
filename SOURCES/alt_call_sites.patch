@@ -1,0 +1,35 @@
+diff --git a/create-diff-object.c b/create-diff-object.c
+index 2d3b35964cf0..28cf40820192 100644
+--- a/create-diff-object.c
++++ b/create-diff-object.c
+@@ -1064,6 +1064,19 @@ static int ex_table_group_size(struct kpatch_elf *kelf, int offset)
+ 	return size;
+ }
+ 
++static int alt_call_sites_group_size(struct kpatch_elf *kelf, int offset)
++{
++	static int size = 0;
++	char *str;
++	if (!size) {
++		str = getenv("ALT_CALL_SITES_STRUCT_SIZE");
++		size = str ? atoi(str) : 4;
++	}
++
++	log_debug("alt_call_sites_size=%d\n", size);
++	return size;
++}
++
+ static int altinstructions_group_size(struct kpatch_elf *kelf, int offset)
+ {
+ 	static int size = 0;
+@@ -1168,6 +1181,10 @@ static struct special_section special_sections[] = {
+ 		.name		= ".ex_table",
+ 		.group_size	= ex_table_group_size,
+ 	},
++	{
++		.name		= ".alt_call_sites",
++		.group_size	= alt_call_sites_group_size,
++	},
+ 	{
+ 		.name		= ".altinstructions",
+ 		.group_size	= altinstructions_group_size,
